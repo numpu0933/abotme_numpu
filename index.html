@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Numpu · Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+TC:wght@300;400;700;900&family=Cinzel:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════
+   VARIABLES
+════════════════════════════════════════ */
+:root {
+  --bg:        #080710;
+  --bg2:       #0e0d18;
+  --bg3:       #141320;
+  --bg4:       #1a1927;
+  --gold:      #c9a55a;
+  --gold2:     #e8c97a;
+  --gold3:     #a07c38;
+  --gold-dim:  rgba(201,165,90,.18);
+  --gold-glow: rgba(201,165,90,.08);
+  --fog:       #ddd8d0;
+  --fog2:      rgba(221,216,208,.65);
+  --fog3:      rgba(221,216,208,.28);
+  --line:      rgba(201,165,90,.16);
+  --line2:     rgba(201,165,90,.08);
+}
+
+/* ════════════════════════════════════════
+   BASE
+════════════════════════════════════════ */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { scroll-behavior:smooth; height:100% }
+body {
+  background:var(--bg);
+  color:var(--fog);
+  font-family:'Cormorant Garamond',serif;
+  overflow-x:hidden;
+  min-height:100%;
+}
+
+/* ════════════════════════════════════════
+   SCROLL PROGRESS BAR  (new)
+════════════════════════════════════════ */
+#scrollProg {
+  position:fixed; top:0; left:0; height:2px; width:0%;
+  background:linear-gradient(90deg,var(--gold3),var(--gold),var(--gold2));
+  z-index:9999; pointer-events:none;
+  box-shadow:0 0 14px rgba(201,165,90,.55);
+  transition:width .08s linear;
+}
+
+/* ════════════════════════════════════════
+   CUSTOM CURSOR
+════════════════════════════════════════ */
+#dot {
+  position:fixed; width:5px; height:5px;
+  background:var(--gold2); border-radius:50%;
+  pointer-events:none; z-index:99999;
+  transform:translate(-50%,-50%);
+  display:none;
+  box-shadow:0 0 10px rgba(201,165,90,.9);
+}
+#ring {
+  position:fixed; width:30px; height:30px;
+  border:1px solid rgba(201,165,90,.38); border-radius:50%;
+  pointer-events:none; z-index:99998;
+  transform:translate(-50%,-50%);
+  transition:width .28s,height .28s,border-color .28s;
+  display:none;
+}
+body.has-mouse { cursor:none }
+body.has-mouse #dot,
+body.has-mouse #ring { display:block }
+body.has-mouse a,
+body.has-mouse button,
+body.has-mouse label,
+body.has-mouse .ic-ov { cursor:none }
+
+/* ════════════════════════════════════════
+   GRAIN OVERLAY
+════════════════════════════════════════ */
+body::after {
+  content:'';
+  position:fixed; inset:0; z-index:9000;
+  pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23f)' opacity='.04'/%3E%3C/svg%3E");
+  mix-blend-mode:screen; opacity:.5;
+}
+
+/* ════════════════════════════════════════
+   GOLD TOP LINE
+════════════════════════════════════════ */
+.gold-topline {
+  position:fixed; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),rgba(201,165,90,.4),transparent);
+  z-index:300; opacity:.8; pointer-events:none;
+}
+
+/* ════════════════════════════════════════
+   INTRO SCREEN
+   z-index order inside #intro:
+     1  = video
+     2  = smoke canvas
+     3  = bg character
+     4  = .ic / .ic-seal / .ic-hint
+     10 = .ic-ov click overlay
+════════════════════════════════════════ */
+#intro {
+  position:fixed; inset:0; z-index:8000;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+
+/* --- video --- */
+#introVid {
+  position:absolute; inset:0;
+  width:100%; height:100%; object-fit:cover;
+  z-index:1; pointer-events:none;
+  opacity:0;
+  filter:grayscale(1) contrast(1.3) brightness(.2) sepia(.3);
+  transition:opacity 2.8s ease;
+}
+#introVid.on { opacity:1 }
+
+/* --- smoke canvas --- */
+#smokeC {
+  position:absolute; inset:0;
+  z-index:2; pointer-events:none;
+}
+
+/* --- big background character --- */
+.ic-bg-char {
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-52%);
+  z-index:3; pointer-events:none; user-select:none;
+  font-family:'Noto Serif TC',serif;
+  font-size:clamp(130px,28vw,340px);
+  font-weight:900; line-height:1;
+  color:transparent;
+  -webkit-text-stroke:1px rgba(201,165,90,.06);
+  opacity:0;
+  animation:bgPop 3s .2s cubic-bezier(.16,1,.3,1) forwards;
+}
+@keyframes bgPop {
+  0%   { opacity:0; filter:blur(60px); transform:translate(-50%,-52%) scale(1.5) }
+  40%  { opacity:1; -webkit-text-stroke:1px rgba(201,165,90,.15) }
+  100% { opacity:1; filter:blur(0); transform:translate(-50%,-52%) scale(1); -webkit-text-stroke:1px rgba(201,165,90,.05) }
+}
+
+/* --- centred content block --- */
+.ic {
+  position:relative; z-index:4;
+  text-align:center; pointer-events:none; user-select:none;
+}
+.ic-crown {
+  display:block; margin:0 auto 22px; width:48px;
+  opacity:0; animation:riseIn 1s 1.2s ease forwards;
+  filter:drop-shadow(0 0 10px rgba(201,165,90,.35));
+}
+.ic-crown path { fill:none; stroke:var(--gold); stroke-width:1 }
+.ic-name {
+  font-family:'Cinzel',serif;
+  font-size:clamp(2.4rem,8vw,6.5rem);
+  font-weight:400; letter-spacing:.65em; padding-right:.65em;
+  color:var(--fog); text-transform:uppercase; line-height:1;
+  opacity:0; animation:riseIn 1.6s 1.5s cubic-bezier(.16,1,.3,1) forwards;
+  text-shadow:0 0 60px rgba(201,165,90,.15);
+}
+.ic-divider {
+  display:flex; align-items:center; justify-content:center;
+  gap:12px; margin:20px 0;
+  opacity:0; animation:riseIn 1s 2.1s ease forwards;
+}
+.ic-divider span {
+  display:block; height:1px; width:70px;
+  background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);
+}
+.ic-divider svg { width:10px; height:10px; opacity:.55 }
+.ic-sub {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:clamp(.8rem,1.6vw,.95rem);
+  color:rgba(201,165,90,.55); letter-spacing:.35em;
+  opacity:0; animation:riseIn 1s 2.5s ease forwards;
+}
+
+/* --- seal --- */
+.ic-seal {
+  position:absolute; bottom:12%; right:8%;
+  width:68px; height:68px;
+  border:1.5px solid var(--gold3);
+  display:flex; align-items:center; justify-content:center;
+  transform:rotate(-10deg);
+  opacity:0; animation:sealPop .6s 3.1s ease forwards;
+  z-index:4; pointer-events:none;
+  box-shadow:0 0 24px rgba(201,165,90,.1),inset 0 0 24px rgba(201,165,90,.04);
+}
+.ic-seal::before {
+  content:''; position:absolute; inset:5px;
+  border:1px solid rgba(201,165,90,.22);
+}
+.ic-seal b {
+  font-family:'Noto Serif TC',serif;
+  color:var(--gold3); font-size:.95rem; font-weight:700;
+}
+
+/* --- hint text --- */
+.ic-hint {
+  position:absolute; bottom:7%; left:50%;
+  transform:translateX(-50%);
+  z-index:4; pointer-events:none;
+  font-size:.48rem; letter-spacing:.55em;
+  color:rgba(201,165,90,.3); text-transform:uppercase;
+  white-space:nowrap;
+  opacity:0; animation:riseIn .8s 3.6s ease forwards;
+}
+
+/* --- click overlay — topmost in #intro --- */
+.ic-ov {
+  position:absolute; inset:0;
+  z-index:10; cursor:pointer;
+  background:transparent;
+}
+
+/* --- exit animation --- */
+.intro-exit { animation:curtain .9s cubic-bezier(.76,0,.24,1) forwards !important }
+@keyframes curtain {
+  0%   { clip-path:inset(0 0 0 0); opacity:1 }
+  100% { clip-path:inset(0 0 100% 0); opacity:0 }
+}
+
+/* --- shared keyframes --- */
+@keyframes riseIn  { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+@keyframes scaleX  { to{transform:scaleX(1)} }
+@keyframes sealPop { from{opacity:0;transform:rotate(-10deg) scale(.1)} 70%{transform:rotate(-10deg) scale(1.1)} to{opacity:1;transform:rotate(-10deg) scale(1)} }
+@keyframes ghostIn { from{opacity:0;transform:translateX(28px)} to{opacity:1;transform:translateX(0)} }
+
+/* ─── Golden shimmer sweep — for the bio caption text ─── */
+@keyframes shimmerSweep {
+  0%   { background-position: -300% center }
+  100% { background-position:  300% center }
+}
+/* ─── Fallback glow pulse for browsers without background-clip:text ─── */
+@keyframes textPulse {
+  0%,100% { opacity:.7;  text-shadow:none }
+  50%     { opacity:1;   text-shadow:0 0 32px rgba(201,165,90,.14),0 0 64px rgba(201,165,90,.05) }
+}
+
+/* ════════════════════════════════════════
+   MAIN PAGE
+════════════════════════════════════════ */
+#page {
+  opacity:0; transition:opacity 1.8s ease;
+  position:relative; z-index:1; min-height:100vh;
+}
+#page.show { opacity:1 }
+#bgC { position:fixed; inset:0; z-index:0; pointer-events:none }
+
+.wrap {
+  position:relative; z-index:2;
+  max-width:1100px; margin:0 auto;
+  padding:0 64px 160px;
+}
+
+/* ════════════════════════════════════════
+   SIDE RAILS
+════════════════════════════════════════ */
+.vl {
+  position:fixed; left:20px; top:50%; transform:translateY(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  z-index:10; pointer-events:none;
+}
+.vr {
+  position:fixed; right:20px; top:50%; transform:translateY(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  z-index:10; pointer-events:none;
+}
+.vl span,.vr span {
+  font-family:'Noto Serif TC',serif; font-size:.6rem;
+  color:rgba(201,165,90,.14); writing-mode:vertical-rl; letter-spacing:.4em;
+}
+.vdot { width:2px; height:2px; background:rgba(201,165,90,.12); border-radius:50% }
+
+/* ════════════════════════════════════════
+   HEADER
+════════════════════════════════════════ */
+.hdr { padding-top:96px; position:relative; margin-bottom:0 }
+
+.hdr-ghost {
+  position:absolute; right:-64px; top:-24px;
+  font-family:'Noto Serif TC',serif;
+  font-size:clamp(8rem,22vw,20rem); font-weight:900;
+  color:transparent; -webkit-text-stroke:1px rgba(201,165,90,.03);
+  line-height:1; user-select:none; pointer-events:none;
+  opacity:0; animation:ghostIn 2.5s .3s ease forwards;
+}
+
+.hdr-eyebrow {
+  display:flex; align-items:center; gap:14px; margin-bottom:12px;
+  opacity:0; animation:riseIn 1s .3s ease forwards;
+}
+.hdr-eyebrow-line { width:36px; height:1px; background:var(--gold-dim) }
+.hdr-eyebrow-txt {
+  font-size:.48rem; letter-spacing:.7em;
+  color:rgba(201,165,90,.42); text-transform:uppercase;
+}
+
+.hdr-n {
+  font-family:'Cinzel',serif;
+  font-size:clamp(3.5rem,10vw,8.5rem);
+  font-weight:400; line-height:.92; letter-spacing:-.01em;
+  color:var(--fog); display:inline-block; position:relative;
+  opacity:0; animation:riseIn 1.4s .5s cubic-bezier(.16,1,.3,1) forwards;
+}
+.hdr-n::after {
+  content:''; position:absolute; bottom:-10px; left:0;
+  width:100%; height:1px;
+  background:linear-gradient(90deg,var(--gold),rgba(201,165,90,.12));
+  transform-origin:left; transform:scaleX(0);
+  animation:scaleX 1.4s 1.5s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+.hdr-tag {
+  display:flex; align-items:center; gap:18px; margin-top:26px;
+  opacity:0; animation:riseIn 1s .9s ease forwards;
+}
+.hdr-tag-t {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:clamp(.9rem,1.8vw,1.1rem);
+  color:rgba(201,165,90,.42); letter-spacing:.05em;
+}
+.hdr-tag-l {
+  flex:1; height:1px;
+  background:linear-gradient(90deg,var(--gold-dim),transparent); max-width:280px;
+}
+
+.hdr-seal {
+  position:absolute; top:88px; right:0;
+  width:64px; height:64px;
+  border:1.5px solid var(--gold3);
+  display:flex; align-items:center; justify-content:center;
+  transform:rotate(8deg);
+  opacity:0; animation:sealPop .8s 1.8s ease forwards;
+  box-shadow:0 0 20px rgba(201,165,90,.08);
+}
+.hdr-seal::before {
+  content:''; position:absolute; inset:5px;
+  border:1px solid rgba(201,165,90,.18);
+}
+.hdr-seal b {
+  font-family:'Noto Serif TC',serif;
+  color:var(--gold3); font-size:.82rem; font-weight:700;
+}
+
+/* ════════════════════════════════════════
+   DIVIDERS / LABELS
+════════════════════════════════════════ */
+.hr {
+  position:relative; margin:64px 0 52px;
+  opacity:0; animation:fadeIn 1s 1.3s ease forwards;
+}
+.hr::before {
+  content:''; display:block; height:1px;
+  background:linear-gradient(90deg,rgba(201,165,90,.3),rgba(201,165,90,.06) 70%,transparent);
+}
+.hr-jewel {
+  position:absolute; top:50%; left:0; transform:translateY(-50%);
+  width:5px; height:5px; background:var(--gold); border-radius:50%;
+  box-shadow:0 0 12px rgba(201,165,90,.7);
+}
+
+.slbl {
+  font-size:.48rem; letter-spacing:.65em; text-transform:uppercase;
+  color:rgba(201,165,90,.32); margin-bottom:48px;
+  display:flex; align-items:center; gap:16px;
+  opacity:0; animation:fadeIn 1s 1.5s ease forwards;
+}
+.slbl-k { font-family:'Noto Serif TC',serif; font-size:1rem; color:rgba(201,165,90,.12) }
+
+/* ════════════════════════════════════════
+   BIO SECTION
+   — Static display only. To update content:
+     edit .bio-title-static and .bio-field-static
+     directly in the HTML below.
+════════════════════════════════════════ */
+.bio-section {
+  margin-bottom:60px;
+  opacity:0; animation:riseIn 1.2s 1.7s ease forwards;
+}
+.bio-label {
+  font-size:.46rem; letter-spacing:.65em; text-transform:uppercase;
+  color:rgba(201,165,90,.38);
+  display:flex; align-items:center; gap:12px; margin-bottom:20px;
+}
+.bio-label::after {
+  content:''; flex:1; height:1px;
+  background:linear-gradient(90deg,var(--gold-dim),transparent); max-width:220px;
+}
+
+.bio-box {
+  position:relative;
+  background:linear-gradient(140deg,var(--bg2) 0%,rgba(14,13,24,.95) 100%);
+  border:1px solid var(--line);
+  padding:36px 42px;
+  transition:border-color .5s, box-shadow .5s;
+  box-shadow:0 24px 80px rgba(0,0,0,.45),inset 0 1px 0 rgba(201,165,90,.04);
+}
+.bio-box::before {
+  content:''; position:absolute; top:0; left:0;
+  height:2px; width:55%;
+  background:linear-gradient(90deg,var(--gold),rgba(201,165,90,.2),transparent);
+  z-index:1;
+}
+.bio-box::after {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse at 20% 0%,rgba(201,165,90,.045),transparent 58%);
+}
+.bio-box:hover {
+  border-color:rgba(201,165,90,.24);
+  box-shadow:0 40px 100px rgba(0,0,0,.6),0 0 60px rgba(201,165,90,.03),inset 0 1px 0 rgba(201,165,90,.07);
+}
+
+.bio-corner { position:absolute; width:14px; height:14px; border-color:var(--gold3); border-style:solid; opacity:.6 }
+.bio-corner.tl { top:8px; left:8px; border-width:1px 0 0 1px }
+.bio-corner.tr { top:8px; right:8px; border-width:1px 1px 0 0 }
+.bio-corner.bl { bottom:8px; left:8px; border-width:0 0 1px 1px }
+.bio-corner.br { bottom:8px; right:8px; border-width:0 1px 1px 0 }
+
+/* Static title — edit text in HTML */
+.bio-title-static {
+  font-family:'Cormorant Garamond',serif; font-size:1.55rem; font-weight:600;
+  color:var(--fog); letter-spacing:.04em; padding-bottom:10px;
+  position:relative; z-index:1;
+}
+
+.bio-sep { height:1px; background:var(--line2); margin:18px 0 22px; position:relative; z-index:1 }
+
+/*
+ * ── CAPTION TEXT — ALWAYS GLOWING ──────────────────────────────
+ * ส่องแสงตลอดเวลา: a golden shimmer sweeps across the text
+ * continuously so it is always easy to read.
+ * Edit the visible text content inside the <p> tag in the HTML.
+ * ────────────────────────────────────────────────────────────── */
+.bio-field-static {
+  font-family:'Cormorant Garamond',serif; font-size:1.08rem;
+  line-height:2.05; letter-spacing:.025em;
+  position:relative; z-index:1;
+  /* Flowing shimmer — warm cream with a rolling gold highlight */
+  background:linear-gradient(
+    90deg,
+    rgba(221,216,208,.70)  0%,
+    rgba(221,216,208,.70) 34%,
+    rgba(232,201,122,.98)  50%,
+    rgba(221,216,208,.70) 66%,
+    rgba(221,216,208,.70) 100%
+  );
+  background-size:300% auto;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:shimmerSweep 6s linear infinite;
+}
+/* Fallback for browsers without background-clip:text */
+@supports not (-webkit-background-clip:text) {
+  .bio-field-static {
+    color:var(--fog2);
+    animation:textPulse 5s ease-in-out infinite;
+    background:none;
+    -webkit-text-fill-color:unset;
+  }
+}
+
+/* ════════════════════════════════════════
+   GRID
+════════════════════════════════════════ */
+.grid { display:grid; grid-template-columns:1.25fr .75fr; gap:14px }
+
+/* ════════════════════════════════════════
+   BASE CARD
+════════════════════════════════════════ */
+.card {
+  position:relative; opacity:0; transform:translateY(40px);
+  transition:opacity .7s ease, transform .7s cubic-bezier(.34,1.3,.64,1);
+}
+.card.on { opacity:1; transform:translateY(0) }
+
+.ci {
+  position:relative; height:100%; overflow:hidden;
+  padding:40px 40px 36px;
+  background:var(--bg2); border:1px solid var(--line2);
+  transition:border-color .5s, background .4s, box-shadow .5s;
+}
+
+/* Mouse-tracked inner spotlight (--mx --my set by JS) */
+.ci::after {
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(
+    420px circle at var(--mx,50%) var(--my,50%),
+    rgba(201,165,90,.045),
+    transparent 60%
+  );
+  opacity:0; transition:opacity .45s;
+}
+.card:hover .ci::after { opacity:1 }
+
+.card:hover .ci {
+  border-color:var(--line); background:var(--bg3);
+  box-shadow:0 36px 88px rgba(0,0,0,.78),
+             0 0 0 1px rgba(201,165,90,.1),
+             inset 0 1px 0 rgba(201,165,90,.07);
+}
+.ci::before {
+  content:''; position:absolute; top:0; left:0; z-index:1;
+  height:2px; width:0;
+  background:linear-gradient(90deg,var(--gold),rgba(201,165,90,.25),transparent);
+  transition:width .6s ease;
+}
+.card:hover .ci::before { width:100% }
+
+/* card corner brackets */
+.cc {
+  position:absolute; width:18px; height:18px;
+  border-color:rgba(201,165,90,.15); border-style:solid;
+  transition:border-color .4s, width .4s, height .4s;
+  pointer-events:none; z-index:2;
+}
+.card:hover .cc { border-color:rgba(201,165,90,.42); width:22px; height:22px }
+.cc.tl { top:10px; left:10px; border-width:1px 0 0 1px }
+.cc.tr { top:10px; right:10px; border-width:1px 1px 0 0 }
+.cc.bl { bottom:10px; left:10px; border-width:0 0 1px 1px }
+.cc.br { bottom:10px; right:10px; border-width:0 1px 1px 0 }
+
+.gn {
+  position:absolute; bottom:12px; right:20px; z-index:0;
+  font-family:'Noto Serif TC',serif; font-size:5rem; font-weight:900; line-height:1;
+  color:rgba(201,165,90,.03); user-select:none; pointer-events:none;
+  transition:color .5s, transform .5s;
+}
+.card:hover .gn { color:rgba(201,165,90,.08); transform:scale(1.06) }
+
+/* ════════════════════════════════════════
+   AVATAR  (display only — no upload)
+════════════════════════════════════════ */
+.av { overflow:hidden; position:relative; background:var(--bg3); flex-shrink:0 }
+.av img {
+  width:100%; height:100%; object-fit:cover; display:block;
+  filter:grayscale(.5) contrast(1.18) brightness(.88) sepia(.12);
+  transition:filter .55s, transform .55s;
+}
+.card:hover .av img { filter:grayscale(.15) contrast(1.12) brightness(.96) sepia(.08); transform:scale(1.08) }
+.av-ph {
+  width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Noto Serif TC',serif; font-size:1.1rem;
+  color:rgba(201,165,90,.25);
+  background:linear-gradient(135deg,var(--bg3),var(--bg4));
+}
+.av-ring {
+  position:absolute; inset:-3px;
+  border:1px solid rgba(201,165,90,.12); pointer-events:none;
+  transition:border-color .45s, box-shadow .45s;
+}
+.card:hover .av-ring { border-color:rgba(201,165,90,.35); box-shadow:0 0 16px rgba(201,165,90,.12) }
+
+/* ════════════════════════════════════════
+   CARD TYPOGRAPHY
+════════════════════════════════════════ */
+.cplat  { font-size:.44rem; letter-spacing:.6em; text-transform:uppercase; color:rgba(201,165,90,.38); margin-bottom:6px; position:relative; z-index:1 }
+.cname  { font-family:'Playfair Display',serif; font-size:clamp(1.7rem,3.2vw,2.5rem); font-weight:500; line-height:1.05; color:var(--fog); margin-bottom:8px; letter-spacing:-.01em; position:relative; z-index:1 }
+.chandl {
+  font-family:'Cormorant Garamond',serif; font-style:italic; font-size:.95rem;
+  color:rgba(201,165,90,.45); margin-bottom:18px; letter-spacing:.02em;
+  position:relative; z-index:1;
+}
+.cdesc  { font-size:.9rem; line-height:1.9; color:var(--fog3); font-style:italic; margin-bottom:30px; position:relative; z-index:1 }
+
+.cta {
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:'Cinzel',serif; font-size:.44rem; font-weight:400;
+  letter-spacing:.45em; text-transform:uppercase; text-decoration:none;
+  color:rgba(201,165,90,.52); border-bottom:1px solid rgba(201,165,90,.15); padding-bottom:4px;
+  transition:color .3s, gap .35s, border-color .3s;
+  position:relative; z-index:1;
+}
+.cta:hover { color:var(--gold2); gap:18px; border-color:rgba(201,165,90,.5) }
+.cta svg { width:10px; height:10px; transition:transform .35s }
+.cta:hover svg { transform:translateX(5px) }
+
+/* ════════════════════════════════════════
+   FEATURED CARD
+════════════════════════════════════════ */
+.card.feat { grid-column:1; grid-row:1/3 }
+.card.feat .ci {
+  background:linear-gradient(160deg,#0d0c14 0%,#0f0e18 100%);
+  border-color:rgba(201,165,90,.1);
+  display:flex; flex-direction:column;
+}
+.card.feat:hover .ci { background:linear-gradient(160deg,#111020 0%,#13122a 100%) }
+.card.feat .av { width:80px; height:80px; margin-bottom:30px }
+.card.feat .cname { font-size:clamp(2.2rem,3.8vw,3.2rem) }
+.card.feat .gn { font-size:7rem }
+
+.feat-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(201,165,90,.07); border:1px solid rgba(201,165,90,.2);
+  padding:5px 16px; margin-top:auto; align-self:flex-start;
+  font-size:.42rem; letter-spacing:.5em; text-transform:uppercase;
+  color:rgba(201,165,90,.65);
+  transition:background .35s, border-color .35s;
+  position:relative; z-index:1;
+}
+.card:hover .feat-badge { background:rgba(201,165,90,.11); border-color:rgba(201,165,90,.32) }
+.feat-badge::before {
+  content:''; width:5px; height:5px;
+  background:var(--gold); border-radius:50%; opacity:.85;
+  box-shadow:0 0 8px rgba(201,165,90,.8);
+}
+
+/* ════════════════════════════════════════
+   HORIZONTAL CARD
+════════════════════════════════════════ */
+.card.hz { grid-column:2 }
+.card.hz .ci { padding:26px 28px }
+.card.hz .inner { display:flex; align-items:flex-start; gap:18px }
+.card.hz .av { width:48px; height:48px; flex-shrink:0 }
+.card.hz .ct { flex:1; min-width:0 }
+.card.hz .cname { font-size:1.45rem; margin-bottom:4px }
+.card.hz .chandl { margin-bottom:13px; font-size:.88rem }
+.card.hz .gn { font-size:4rem; bottom:6px; right:14px }
+
+/* ════════════════════════════════════════
+   WIDE CARD
+════════════════════════════════════════ */
+.card.wide { grid-column:1/-1 }
+.card.wide .ci { padding:30px 36px }
+.card.wide .inner { display:flex; align-items:center; gap:26px }
+.card.wide .av { width:54px; height:54px; flex-shrink:0 }
+.card.wide .ct { flex:1 }
+.card.wide .cname { font-size:1.75rem }
+.card.wide .gn { font-size:4.5rem }
+
+.stats { display:flex; gap:32px; margin-top:16px; padding-top:16px; border-top:1px solid var(--line2); position:relative; z-index:1 }
+.stat { display:flex; flex-direction:column; gap:4px }
+.stat-v { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--gold); font-weight:500 }
+.stat-l { font-size:.42rem; letter-spacing:.45em; text-transform:uppercase; color:rgba(201,165,90,.3) }
+
+/* ════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════ */
+.footer {
+  margin-top:100px; padding-top:32px;
+  border-top:1px solid var(--line2);
+  display:flex; justify-content:space-between; align-items:flex-end;
+  opacity:0; animation:fadeIn 1s 2.5s ease forwards;
+}
+.fq {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:.92rem; color:rgba(201,165,90,.25); max-width:320px; line-height:2;
+}
+.fseal { display:flex; flex-direction:column; align-items:flex-end; gap:8px }
+.fstamp {
+  position:relative;
+  width:40px; height:40px;
+  border:1px solid rgba(201,165,90,.24);
+  display:flex; align-items:center; justify-content:center;
+  transform:rotate(-7deg);
+  transition:box-shadow .4s;
+}
+.fstamp:hover { box-shadow:0 0 22px rgba(201,165,90,.14) }
+.fstamp::before {
+  content:''; position:absolute; inset:3px;
+  border:1px solid rgba(201,165,90,.1);
+}
+.fstamp b {
+  font-family:'Noto Serif TC',serif;
+  color:rgba(201,165,90,.5); font-size:.6rem; font-weight:700;
+}
+.fyr { font-size:.45rem; letter-spacing:.5em; color:rgba(201,165,90,.18); text-transform:uppercase }
+
+/* ════════════════════════════════════════
+   RESPONSIVE — TABLET ≤760px
+════════════════════════════════════════ */
+@media(max-width:760px) {
+  .vl,.vr,.hdr-ghost,.hdr-seal { display:none }
+  .wrap { padding:0 24px 100px }
+  .hdr { padding-top:60px }
+  .hdr-n { font-size:clamp(3rem,14vw,5rem) }
+  .bio-box { padding:24px 22px }
+  .bio-label::after { max-width:80px }
+  .grid { grid-template-columns:1fr; gap:12px }
+  .card.feat { grid-column:1; grid-row:auto }
+  .card.feat .cname { font-size:2rem }
+  .card.hz,.card.wide { grid-column:1 }
+  .card.wide .inner { flex-direction:row; gap:18px }
+  .stats { gap:20px; flex-wrap:wrap }
+  .footer { flex-direction:column; gap:22px; align-items:flex-start }
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE — MOBILE ≤420px
+════════════════════════════════════════ */
+@media(max-width:420px) {
+  .wrap { padding:0 16px 80px }
+  .ci { padding:28px 22px 24px }
+  .card.feat .cname { font-size:1.8rem }
+  .cname { font-size:1.5rem !important }
+  .bio-field-static { font-size:1rem }
+  .hdr-n { font-size:clamp(2.6rem,13vw,4rem) }
+  .ic-name { letter-spacing:.35em; padding-right:.35em }
+}
+</style>
+</head>
+<body>
+
+<div id="scrollProg"></div>
+<div id="dot"></div>
+<div id="ring"></div>
+<div class="gold-topline"></div>
+
+<!-- ════════════════════════════════════════
+     INTRO
+════════════════════════════════════════ -->
+<div id="intro">
+
+  <!-- z-index 1 : video background -->
+  <video id="introVid" autoplay muted loop playsinline>
+    <source src="intro.mp4" type="video/mp4">
+  </video>
+
+  <!-- z-index 2 : smoke particles -->
+  <canvas id="smokeC"></canvas>
+
+  <!-- z-index 3 : large ghost character -->
+  <div class="ic-bg-char">墨</div>
+
+  <!-- z-index 4 : centred text content -->
+  <div class="ic">
+    <svg class="ic-crown" viewBox="0 0 60 34" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 30 L14 8 L30 20 L46 8 L58 30 Z" stroke-linejoin="round"/>
+      <circle cx="2"  cy="30" r="2.5" fill="rgba(201,165,90,.6)" stroke="none"/>
+      <circle cx="30" cy="20" r="2.5" fill="rgba(201,165,90,.6)" stroke="none"/>
+      <circle cx="58" cy="30" r="2.5" fill="rgba(201,165,90,.6)" stroke="none"/>
+      <line x1="2" y1="32" x2="58" y2="32"/>
+    </svg>
+    <h1 class="ic-name">Profile</h1>
+    <div class="ic-divider">
+      <span></span>
+      <svg viewBox="0 0 14 14" fill="none" stroke="rgba(201,165,90,.5)" stroke-width="1">
+        <polygon points="7,1 13,13 1,13"/>
+      </svg>
+      <span></span>
+    </div>
+    <p class="ic-sub">Profile Numpu &nbsp;·&nbsp; Contact &nbsp;·&nbsp; 墨離煙</p>
+  </div>
+
+  <!-- z-index 4 : seal & hint -->
+  <div class="ic-seal"><b>印</b></div>
+  <p class="ic-hint">click anywhere · tap to enter · 點擊進入</p>
+
+  <!-- z-index 10 : CLICK TARGET — must be the very last child -->
+  <div class="ic-ov" id="iOv"></div>
+
+</div>
+
+
+<!-- ════════════════════════════════════════
+     PAGE
+════════════════════════════════════════ -->
+<div id="page">
+  <canvas id="bgC"></canvas>
+
+  <nav class="vl">
+    <span>墨</span><div class="vdot"></div>
+    <span>道</span><div class="vdot"></div>
+    <span>金</span><div class="vdot"></div>
+    <span>煙</span>
+  </nav>
+  <nav class="vr">
+    <span>印</span><div class="vdot"></div>
+    <span>筆</span><div class="vdot"></div>
+    <span>光</span>
+  </nav>
+
+  <div class="wrap">
+
+    <header class="hdr">
+      <div class="hdr-ghost">努</div>
+      <div class="hdr-seal"><b>努</b></div>
+      <div class="hdr-eyebrow">
+        <span class="hdr-eyebrow-line"></span>
+        <span class="hdr-eyebrow-txt">Profile · การติดต่อ</span>
+      </div>
+      <h1 class="hdr-n">Profile</h1>
+      <div class="hdr-tag">
+        <span class="hdr-tag-t">Contact me &nbsp;·&nbsp; ช่่องทางการติดต่องาน &nbsp;·&nbsp; 墨離煙</span>
+        <span class="hdr-tag-l"></span>
+      </div>
+    </header>
+
+    <div class="hr"><div class="hr-jewel"></div></div>
+    <p class="slbl"><span class="slbl-k">金</span>About &amp; Connections · เกี่ยวกับฉัน</p>
+
+    <!-- ════════════════════════════════════
+         BIO — READ-ONLY DISPLAY
+         ✏️  To update: edit the text inside
+             .bio-title-static  and
+             .bio-field-static  below.
+    ════════════════════════════════════ -->
+    <div class="bio-section">
+      <div class="bio-label">About me · รายละเอียด</div>
+      <div class="bio-box">
+        <div class="bio-corner tl"></div>
+        <div class="bio-corner tr"></div>
+        <div class="bio-corner bl"></div>
+        <div class="bio-corner br"></div>
+
+        <!-- ✏️ EDIT NAME / TITLE HERE -->
+        <h2 class="bio-title-static">About me / Name · Numpu</h2>
+
+        <div class="bio-sep"></div>
+
+        <!-- ✏️ EDIT BIO DESCRIPTION HERE
+             This text always glows (shimmerSweep animation) for easy reading. -->
+        <p class="bio-field-static">หากต้องการติดต่องาน หรืออยากสอบสามารถติดต่อได้เสมอเลยนะครับ ตาม Contact ด้านล่างนี้ โดยเฉลี่ยจะเล่น IG เป็นหลัก ถ้าหากมีธุระสอบถาม จ้างงานสามารถทักมาได้เสมอ<br><br>If you want to contact me for work or have any questions you can reach out anytime through the contacts below I am usually active on Instagram so feel free to message me anytime for inquiries or job opportunities</p>
+
+      </div>
+    </div>
+
+    <p class="slbl" style="margin-top:0"><span class="slbl-k">墨</span>Connections · การติดต่อ</p>
+
+    <div class="grid" id="cGrid">
+
+      <!-- EMAIL (featured) -->
+      <div class="card feat" data-d="0">
+        <div class="ci">
+          <div class="cc tl"></div><div class="cc tr"></div>
+          <div class="cc bl"></div><div class="cc br"></div>
+          <div class="av" style="width:80px;height:80px;margin-bottom:30px">
+            <!-- ✏️ Profile image — place profile.jpg next to this file -->
+            <img src="profile.jpg" alt="Numpu" onerror="this.style.display='none'">
+            <div class="av-ph">努</div>
+            <div class="av-ring"></div>
+          </div>
+          <p class="cplat">Primary · Email</p>
+          <h2 class="cname">Email</h2>
+          <p class="chandl"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="72111a131c13021a071f111a131b0b13021a071f32151f131b1e5c111d1f">[email&#160;protected]</a></p>
+          <p class="cdesc">สำหรับงานและติดต่อธุรกิจเท่านั้น<br>
+            <span style="opacity:.7">Work &amp; Business inquiries only.</span></p>
+          <a href="/cdn-cgi/l/email-protection#cca2b9a1bcb98caba1ada5a0e2afa3a1" class="cta">
+            Write to me
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+          <div class="feat-badge">Primary contact</div>
+          <span class="gn">一</span>
+        </div>
+      </div>
+
+      <!-- INSTAGRAM -->
+      <div class="card hz" data-d="90">
+        <div class="ci">
+          <div class="cc tl"></div><div class="cc tr"></div>
+          <div class="cc bl"></div><div class="cc br"></div>
+          <div class="inner">
+            <div class="av">
+              <!-- ✏️ Place ig.jpg next to this file -->
+              <img src="ig.jpg" alt="" onerror="this.style.display='none'">
+              <div class="av-ph" style="font-size:.65rem">IG</div>
+              <div class="av-ring"></div>
+            </div>
+            <div class="ct">
+              <p class="cplat">Visual · Social</p>
+              <h2 class="cname">Instagram</h2>
+              <p class="chandl">@Numpu</p>
+              <a href="https://www.instagram.com/Numpu" target="_blank" class="cta">
+                View
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+          <span class="gn">二</span>
+        </div>
+      </div>
+
+      <!-- FACEBOOK -->
+      <div class="card hz" data-d="150">
+        <div class="ci">
+          <div class="cc tl"></div><div class="cc tr"></div>
+          <div class="cc bl"></div><div class="cc br"></div>
+          <div class="inner">
+            <div class="av">
+              <!-- ✏️ Place fb.jpg next to this file -->
+              <img src="fb.jpg" alt="" onerror="this.style.display='none'">
+              <div class="av-ph" style="font-size:.65rem">FB</div>
+              <div class="av-ring"></div>
+            </div>
+            <div class="ct">
+              <p class="cplat">Social · Network</p>
+              <h2 class="cname">Facebook</h2>
+              <p class="chandl">@Numpu</p>
+              <a href="https://www.facebook.com/n6mpx?locale=th_TH" target="_blank" class="cta">
+                View
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+          <span class="gn">三</span>
+        </div>
+      </div>
+
+      <!-- LINE -->
+      <div class="card wide" data-d="210">
+        <div class="ci">
+          <div class="cc tl"></div><div class="cc tr"></div>
+          <div class="cc bl"></div><div class="cc br"></div>
+          <div class="inner">
+            <div class="av">
+              <!-- ✏️ Place line.jpg next to this file -->
+              <img src="line.jpg" alt="" onerror="this.style.display='none'">
+              <div class="av-ph" style="font-size:.55rem">LINE</div>
+              <div class="av-ring"></div>
+            </div>
+            <div class="ct">
+              <p class="cplat">Messaging · LINE</p>
+              <h2 class="cname">LINE</h2>
+              <p class="chandl">@Numpu</p>
+              <a href="https://line.me/ti/p/zT8fK6BBep" target="_blank" class="cta">
+                Add friend
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+              <div class="stats">
+                <div class="stat"><span class="stat-v">LINE</span><span class="stat-l">Messenger</span></div>
+                <div class="stat"><span class="stat-v">TH</span><span class="stat-l">Region</span></div>
+              </div>
+            </div>
+          </div>
+          <span class="gn">四</span>
+        </div>
+      </div>
+
+      <!-- DISCORD -->
+      <div class="card wide" data-d="270">
+        <div class="ci">
+          <div class="cc tl"></div><div class="cc tr"></div>
+          <div class="cc bl"></div><div class="cc br"></div>
+          <div class="inner">
+            <div class="av">
+              <!-- ✏️ Place dc.jpg next to this file -->
+              <img src="dc.jpg" alt="" onerror="this.style.display='none'">
+              <div class="av-ph" style="font-size:.55rem">DC</div>
+              <div class="av-ring"></div>
+            </div>
+            <div class="ct">
+              <p class="cplat">Community · Discord</p>
+              <h2 class="cname">Discord</h2>
+              <p class="chandl">whalearoimak</p>
+              <a href="https://discord.com/users/whalearoimak" target="_blank" class="cta">
+                Connect
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+              <div class="stats">
+                <div class="stat"><span class="stat-v">DC</span><span class="stat-l">Platform</span></div>
+                <div class="stat"><span class="stat-v">whalearoimak</span><span class="stat-l">Username</span></div>
+              </div>
+            </div>
+          </div>
+          <span class="gn">五</span>
+        </div>
+      </div>
+
+    </div><!-- /#cGrid -->
+
+    <footer class="footer">
+      <p class="fq">"In the smoke of parting, gold speaks what ink cannot."</p>
+      <div class="fseal">
+        <div class="fstamp"><b>印</b></div>
+        <span class="fyr">MMXXVI</span>
+      </div>
+    </footer>
+
+  </div><!-- /.wrap -->
+</div><!-- /#page -->
+
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>
+/* ════════════════════════════════════════
+   SCROLL PROGRESS BAR
+════════════════════════════════════════ */
+const prog = document.getElementById('scrollProg');
+window.addEventListener('scroll', () => {
+  const s   = document.documentElement;
+  const pct = s.scrollTop / (s.scrollHeight - s.clientHeight) * 100;
+  prog.style.width = pct + '%';
+}, { passive: true });
+
+/* ════════════════════════════════════════
+   CUSTOM CURSOR
+   Only activates after first mousemove (pointer devices only).
+   Touch devices never get cursor:none.
+════════════════════════════════════════ */
+const dot  = document.getElementById('dot');
+const ring = document.getElementById('ring');
+let mx = innerWidth / 2, my = innerHeight / 2;
+let rx = mx, ry = my;
+let mouseDetected = false;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left = mx + 'px';
+  dot.style.top  = my + 'px';
+  if (!mouseDetected) {
+    mouseDetected = true;
+    document.body.classList.add('has-mouse');
+  }
+}, { passive: true });
+
+(function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animRing);
+})();
+
+/* ════════════════════════════════════════
+   CARD SPOTLIGHT — inner glow follows mouse
+════════════════════════════════════════ */
+document.querySelectorAll('.ci').forEach(ci => {
+  ci.addEventListener('mousemove', e => {
+    const r = ci.getBoundingClientRect();
+    ci.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    ci.style.setProperty('--my', (e.clientY - r.top)  + 'px');
+  }, { passive: true });
+});
+
+/* ════════════════════════════════════════
+   SMOKE CANVAS
+════════════════════════════════════════ */
+const sc = document.getElementById('smokeC');
+const sx = sc.getContext('2d');
+
+function resizeSC() {
+  sc.width  = innerWidth;
+  sc.height = innerHeight;
+}
+resizeSC();
+window.addEventListener('resize', resizeSC, { passive: true });
+
+function mkSmoke() {
+  return {
+    x:    sc.width  * (.2  + Math.random() * .6),
+    y:    sc.height * (.55 + Math.random() * .45),
+    vx:   (Math.random() - .5) * .25,
+    vy:   -(Math.random() * .5 + .15),
+    r:    Math.random() * 90 + 30,
+    a: 0, maxA: Math.random() * .038 + .008,
+    life: 0, maxL: Math.random() * 280 + 160,
+    rot:  Math.random() * Math.PI * 2,
+    rv:   (Math.random() - .5) * .003,
+    scx:  Math.random() * .5 + .75,
+    scy:  Math.random() * .65 + .85,
+    gold: Math.random() > .68,
+  };
+}
+
+const smokes = Array.from({ length: 26 }, () => {
+  const s = mkSmoke();
+  s.life = Math.random() * s.maxL;
+  return s;
+});
+
+let smokeRunning = true;
+
+function drawSmoke() {
+  sx.clearRect(0, 0, sc.width, sc.height);
+  smokes.forEach(s => {
+    s.life++;
+    const p = s.life / s.maxL;
+    s.a = p < .2  ? s.maxA * (p / .2)
+        : p > .72 ? s.maxA * (1 - (p - .72) / .28)
+        : s.maxA;
+    s.x += s.vx; s.y += s.vy; s.r += .1; s.rot += s.rv;
+    if (s.life >= s.maxL) Object.assign(s, mkSmoke());
+
+    sx.save();
+    sx.translate(s.x, s.y);
+    sx.rotate(s.rot);
+    sx.scale(s.scx, s.scy);
+    const g = sx.createRadialGradient(0, 0, 0, 0, 0, s.r);
+    if (s.gold) {
+      g.addColorStop(0,  `rgba(201,165,90,${s.a})`);
+      g.addColorStop(.5, `rgba(201,165,90,${s.a * .25})`);
+      g.addColorStop(1,  'rgba(201,165,90,0)');
+    } else {
+      g.addColorStop(0,  `rgba(212,207,200,${s.a * .7})`);
+      g.addColorStop(.5, `rgba(212,207,200,${s.a * .15})`);
+      g.addColorStop(1,  'rgba(212,207,200,0)');
+    }
+    sx.fillStyle = g;
+    sx.beginPath();
+    sx.arc(0, 0, s.r, 0, Math.PI * 2);
+    sx.fill();
+    sx.restore();
+  });
+  if (smokeRunning) requestAnimationFrame(drawSmoke);
+}
+drawSmoke();
+
+/* ════════════════════════════════════════
+   VIDEO — fade in as soon as data is available.
+   Using multiple events + readyState check for
+   maximum browser compatibility.
+════════════════════════════════════════ */
+const vid = document.getElementById('introVid');
+if (vid) {
+  function showVid() {
+    vid.classList.add('on');
+  }
+  vid.addEventListener('canplay',    showVid, { once: true });
+  vid.addEventListener('loadeddata', showVid, { once: true });
+  // Already cached / ready
+  if (vid.readyState >= 3) showVid();
+}
+
+/* ════════════════════════════════════════
+   INTRO EXIT
+════════════════════════════════════════ */
+let exited = false;
+
+function exitIntro() {
+  if (exited) return;
+  exited = true;
+  smokeRunning = false;
+
+  const intro = document.getElementById('intro');
+  const page  = document.getElementById('page');
+
+  intro.classList.add('intro-exit');
+
+  setTimeout(() => {
+    intro.style.display = 'none';
+    page.classList.add('show');
+    buildBg();
+    initCards();
+  }, 920);
+}
+
+const iOv = document.getElementById('iOv');
+iOv.addEventListener('click', exitIntro);
+iOv.addEventListener('touchend', e => {
+  e.preventDefault();
+  exitIntro();
+}, { passive: false });
+
+// Auto-exit after 6.2 s
+const autoExit = setTimeout(exitIntro, 6200);
+
+/* ════════════════════════════════════════
+   BACKGROUND GOLD WASH  (painted once on exit)
+════════════════════════════════════════ */
+function buildBg() {
+  const cv = document.getElementById('bgC');
+  cv.width  = innerWidth;
+  cv.height = innerHeight;
+  const cx  = cv.getContext('2d');
+
+  [
+    { x: 0,           y: 0,           rx: .40, ry: .44, a: .042, gold: true  },
+    { x: cv.width,    y: cv.height,   rx: .45, ry: .50, a: .032, gold: true  },
+    { x: cv.width*.5, y: 0,           rx: .30, ry: .28, a: .016, gold: false },
+  ].forEach(({ x, y, rx, ry, a, gold }) => {
+    const R   = Math.max(rx * cv.width, ry * cv.height);
+    const col = gold ? '201,165,90' : '212,207,200';
+    const g   = cx.createRadialGradient(x, y, 0, x, y, R);
+    g.addColorStop(0, `rgba(${col},${a})`);
+    g.addColorStop(1, `rgba(${col},0)`);
+    cx.save();
+    cx.scale(rx * cv.width / R, ry * cv.height / R);
+    cx.beginPath();
+    cx.arc(x / (rx * cv.width / R), y / (ry * cv.height / R), R, 0, Math.PI * 2);
+    cx.fillStyle = g;
+    cx.fill();
+    cx.restore();
+  });
+
+  for (let i = 0; i < 16; i++) {
+    const y   = Math.random() * cv.height;
+    const len = cv.width * (.1 + Math.random() * .45);
+    const x0  = Math.random() * cv.width * .65;
+    const a   = .005 + Math.random() * .022;
+    const g   = cx.createLinearGradient(x0, y, x0 + len, y);
+    g.addColorStop(0,   'rgba(201,165,90,0)');
+    g.addColorStop(.3,  `rgba(201,165,90,${a})`);
+    g.addColorStop(1,   'rgba(201,165,90,0)');
+    cx.beginPath();
+    cx.moveTo(x0, y);
+    cx.lineTo(x0 + len, y);
+    cx.strokeStyle = g;
+    cx.lineWidth   = .5 + Math.random() * 3;
+    cx.stroke();
+  }
+}
+
+/* ════════════════════════════════════════
+   CARD SCROLL REVEAL
+════════════════════════════════════════ */
+function initCards() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const delay = parseInt(e.target.dataset.d) || 0;
+        setTimeout(() => e.target.classList.add('on'), delay);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.06 });
+
+  document.querySelectorAll('.card').forEach(c => obs.observe(c));
+}
+</script>
+</body>
+</html>
