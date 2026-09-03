@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Ma+Shan+Zheng&family=Noto+Serif+TC:wght@300;500;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* DARK THEME (Default) */
+  /* DARK THEME (Default - Original) */
   --bg:        #050402;
   --bg2:       #0a0804;
   --bg3:       #120e08;
@@ -37,14 +37,13 @@
   --card-hover: rgba(22,17,8,.96);
   --ink-dark:  rgba(10,8,4,.9);
   --ink-med:   rgba(20,15,8,.5);
-  /* Glass/frost variables */
   --glass-bg:  rgba(18,14,8,.45);
   --glass-border: rgba(201,165,90,.22);
   --glass-blur: 18px;
 }
 
 [data-theme="light"] {
-  /* LIGHT THEME — Warm Twilight Mist: soft warm greys with golden undertone, easy on eyes */
+  /* LIGHT THEME (Original) */
   --bg:        #e8e2d8;
   --bg2:       #dfd8cc;
   --bg3:       #d6cfc2;
@@ -72,11 +71,33 @@
   --card-hover: rgba(210,202,186,.85);
   --ink-dark:  rgba(40,28,8,.75);
   --ink-med:   rgba(60,40,10,.35);
-  /* Glass/frost variables for glassmorphism */
   --glass-bg:  rgba(232,226,216,.45);
   --glass-border: rgba(180,155,110,.28);
   --glass-blur: 18px;
 }
+
+/* ════════════════════════════════════════
+   DISABLE TEXT SELECTION & DRAG GLOBALLY
+   ════════════════════════════════════════ */
+*, *::before, *::after {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+img {
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+}
+/* Email link — never blue */
+.email-name, .email-name a,
+.email-name a:link, .email-name a:visited,
+.email-name a:hover, .email-name a:active {
+  color: var(--gold) !important;
+  text-decoration: none !important;
+}
+a { color: inherit; text-decoration: none; }
 
 /* ════════════════════════════════════════
    PAGE LOAD TRANSITION
@@ -160,7 +181,7 @@ body {
 #themeRipple.run { animation:themeRipple 1s ease-out forwards }
 
 /* ════════════════════════════════════════
-   WARP PORTAL TRANSITION (link click) — replaces old inkSplash
+   WARP PORTAL TRANSITION (link click)
    ════════════════════════════════════════ */
 @keyframes warpPortalExpand {
   0%   { opacity:0; transform:translate(-50%,-50%) scale(0) rotate(0deg) }
@@ -197,14 +218,12 @@ body {
   animation:warpBgSuck .85s cubic-bezier(.4,0,.2,1) forwards,
             warpFadeOut .3s ease .7s forwards;
 }
-/* Portal ring elements */
 .warp-ring {
   position:fixed; border-radius:50%; pointer-events:none; z-index:99991;
   border-style:solid;
   transform:translate(-50%,-50%) scale(0);
   animation:warpRingPulse var(--dur,.7s) cubic-bezier(.22,1,.36,1) forwards;
 }
-/* Ink blobs - kept but restyled as warp shards */
 .ink-blob {
   position:fixed; pointer-events:none; z-index:99992;
   border-radius:20% 80% 60% 40% / 40% 60% 80% 20%;
@@ -421,11 +440,9 @@ body {
 #brushCanvas {
   position:fixed; inset:0; z-index:99985; pointer-events:none;
 }
-/* Hide default cursor when brush is active */
 body.brush-active { cursor:none !important }
 body.brush-active * { cursor:none !important }
 
-/* Brush cursor tip */
 #brushTip {
   position:fixed; pointer-events:none; z-index:99999;
   width:24px; height:24px;
@@ -436,7 +453,7 @@ body.brush-active * { cursor:none !important }
 body.has-mouse #brushTip { display:block }
 
 /* ════════════════════════════════════════
-   SCROLL PROGRESS BAR — ink brush style
+   SCROLL PROGRESS BAR
    ════════════════════════════════════════ */
 #scrollProg {
   position:fixed; top:0; left:0; height:2px; width:0%;
@@ -470,7 +487,6 @@ body.has-mouse #brushTip { display:block }
 }
 #warpPortal.active { display:block }
 
-/* Central vortex ring */
 .portal-ring {
   position:absolute; top:50%; left:50%;
   border-radius:50%;
@@ -507,7 +523,6 @@ body.has-mouse #brushTip { display:block }
   100% { transform:translate(-50%,-50%) scale(20) rotate(360deg); opacity:0 }
 }
 
-/* Central bright flash */
 .portal-core {
   position:absolute; top:50%; left:50%;
   width:40px; height:40px;
@@ -524,7 +539,6 @@ body.has-mouse #brushTip { display:block }
   100% { transform:translate(-50%,-50%) scale(40); opacity:0 }
 }
 
-/* Screen crack/shatter effect lines */
 .portal-beam {
   position:absolute; top:50%; left:50%;
   width:2px; height:55vh;
@@ -550,7 +564,6 @@ body.has-mouse #brushTip { display:block }
   100% { transform:translateX(-50%) rotate(var(--beam-angle,0deg)) scaleY(2.5); opacity:0 }
 }
 
-/* Warp-in page reveal */
 @keyframes warpPageReveal {
   0%   { clip-path:ellipse(0% 0% at 50% 50%); opacity:0; transform:scale(2) }
   40%  { clip-path:ellipse(20% 15% at 50% 50%); opacity:.8; transform:scale(1.3) }
@@ -560,12 +573,12 @@ body.has-mouse #brushTip { display:block }
   animation:warpPageReveal 1.1s cubic-bezier(.22,1,.36,1) forwards;
 }
 
-/* Background distortion canvas for warp */
 #warpCanvas {
   position:fixed; inset:0; z-index:9001; pointer-events:none;
   opacity:0; transition:opacity .3s;
 }
 #warpCanvas.active { opacity:1 }
+
 #intro {
   position:fixed; inset:0; z-index:9000;
   display:flex; align-items:center; justify-content:center;
@@ -581,7 +594,6 @@ body.has-mouse #brushTip { display:block }
     radial-gradient(ellipse 40% 30% at 80% 80%, rgba(139,32,32,.06) 0%, transparent 50%);
   pointer-events:none;
 }
-/* Ink wash texture on intro */
 #intro::after {
   content:'';
   position:absolute; inset:0;
@@ -765,6 +777,9 @@ body.has-mouse #brushTip { display:block }
   backdrop-filter:blur(var(--glass-blur)) saturate(160%);
   -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(160%);
   box-shadow:0 20px 60px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.06), 0 0 0 1px rgba(255,255,255,.04);
+  transform-style: preserve-3d;
+  transform: perspective(1000px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+  transition: transform 0.2s ease-out, box-shadow 0.5s, background 0.5s;
 }
 [data-theme="light"] .bio-box { background:var(--glass-bg); box-shadow:0 8px 40px rgba(0,0,0,.06), inset 0 1px 0 rgba(255,255,255,.5), 0 0 0 1px rgba(255,255,255,.3) }
 
@@ -772,7 +787,7 @@ body.has-mouse #brushTip { display:block }
   content:''; position:absolute; top:-1px; left:20px; right:20px; height:1px;
   background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);
 }
-.bio-title { margin-bottom:35px }
+.bio-title { margin-bottom:35px; transform: translateZ(30px); }
 .bio-title-static {
   font-family:'Cinzel',serif; font-size:.65rem; letter-spacing:.4em;
   text-transform:uppercase; color:var(--gold); margin-bottom:8px; display:block;
@@ -781,10 +796,10 @@ body.has-mouse #brushTip { display:block }
   font-family:'Playfair Display',serif; font-size:2.4rem; font-weight:500;
   color:var(--fog); line-height:1.1;
 }
-.bio-content { font-size:1.05rem; line-height:2; color:var(--fog2); margin-bottom:40px }
-.bio-sep { width:40px; height:1px; background:var(--line); margin-bottom:30px }
+.bio-content { font-size:1.05rem; line-height:2; color:var(--fog2); margin-bottom:40px; transform: translateZ(20px); }
+.bio-sep { width:40px; height:1px; background:var(--line); margin-bottom:30px; transform: translateZ(10px); }
 
-.bio-fields { display:flex; flex-direction:column; gap:22px }
+.bio-fields { display:flex; flex-direction:column; gap:22px; transform: translateZ(40px); }
 .bio-field { display:flex; flex-direction:column; gap:4px }
 .bio-field-static {
   font-size:.42rem; letter-spacing:.5em; text-transform:uppercase;
@@ -793,55 +808,113 @@ body.has-mouse #brushTip { display:block }
 .bio-field-val { font-family:'Cinzel',serif; font-size:1.1rem; color:var(--gold2) }
 
 /* ════════════════════════════════════════
-   GOLDEN FRAME FOR IMAGES
+   3D CAROUSEL (About Me Images)
    ════════════════════════════════════════ */
-.photo-frame-wrap { display:flex; justify-content:flex-end; position:relative }
-.photo-golden-frame {
-  position:relative; width:280px; height:360px;
-  padding:12px; background:var(--bg2);
-  border:1px solid var(--gold3);
-  box-shadow:0 30px 70px rgba(0,0,0,.5), 0 0 20px rgba(201,165,90,.1);
-  transition:transform .6s cubic-bezier(.22,1,.36,1), box-shadow .6s;
+.photo-frame-wrap { 
+  display:flex; justify-content:center; align-items: center; position:relative;
+  perspective: 1200px;
 }
-.photo-golden-frame::before {
+.carousel-3d-container {
+  position: relative;
+  width: 280px;
+  height: 360px;
+  margin: 40px auto;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+  transition: transform 0.2s ease-out;
+}
+.carousel-3d-scene {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+.carousel-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  background: var(--bg2);
+  border: 1px solid var(--gold3);
+  box-shadow: 0 30px 70px rgba(0,0,0,.5), 0 0 20px rgba(201,165,90,.1);
+  transition: all 0.8s cubic-bezier(.22,1,.36,1);
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+.carousel-card::before {
   content:''; position:absolute; inset:4px;
-  border:1px solid var(--gold); opacity:.4; pointer-events:none;
+  border:1px solid var(--gold); opacity:.4; pointer-events:none; z-index:2;
 }
-.photo-golden-frame::after {
-  content:''; position:absolute; inset:-8px;
-  border:1px solid var(--gold-dim); pointer-events:none;
-}
-.photo-golden-frame:hover {
-  transform:translateY(-10px) rotate(1deg);
-  box-shadow:0 40px 90px rgba(0,0,0,.7), 0 0 30px rgba(201,165,90,.2);
-}
-
-/* Corner ornaments for frame */
-.frame-orn {
+.carousel-card .frame-orn {
   position:absolute; width:20px; height:20px;
-  border:2px solid var(--gold); z-index:2;
+  border:2px solid var(--gold); z-index:3;
 }
-.orn-tl { top:-2px; left:-2px; border-right:none; border-bottom:none }
-.orn-tr { top:-2px; right:-2px; border-left:none; border-bottom:none }
-.orn-bl { bottom:-2px; left:-2px; border-right:none; border-top:none }
-.orn-br { bottom:-2px; right:-2px; border-left:none; border-top:none }
+.carousel-card .orn-tl { top:-2px; left:-2px; border-right:none; border-bottom:none }
+.carousel-card .orn-tr { top:-2px; right:-2px; border-left:none; border-bottom:none }
+.carousel-card .orn-bl { bottom:-2px; left:-2px; border-right:none; border-top:none }
+.carousel-card .orn-br { bottom:-2px; right:-2px; border-left:none; border-top:none }
 
-.photo-inner {
-  width:100%; height:100%; overflow:hidden; position:relative;
-  background:#111;
+.carousel-card .photo-inner {
+  width:100%; height:100%; overflow:hidden; position:relative; background:#111;
 }
-.photo-inner img {
+.carousel-card .photo-inner img {
   width:100%; height:100%; object-fit:cover;
   filter:sepia(20%) contrast(110%) brightness(90%);
-  transition:transform 1.2s ease, filter .6s;
 }
-.photo-golden-frame:hover img { transform:scale(1.08); filter:sepia(0%) contrast(105%) brightness(100%) }
+.carousel-card.active {
+  transform: translateZ(120px);
+  opacity: 1;
+  z-index: 10;
+  pointer-events: auto;
+}
+.carousel-card.prev {
+  transform: translateX(-70%) rotateY(40deg) translateZ(0);
+  opacity: 0.6;
+  z-index: 5;
+}
+.carousel-card.next {
+  transform: translateX(70%) rotateY(-40deg) translateZ(0);
+  opacity: 0.6;
+  z-index: 5;
+}
+.carousel-card.hidden-left {
+  transform: translateX(-130%) rotateY(45deg) translateZ(-120px);
+  opacity: 0;
+  z-index: 1;
+}
+.carousel-card.hidden-right {
+  transform: translateX(130%) rotateY(-45deg) translateZ(-120px);
+  opacity: 0;
+  z-index: 1;
+}
 
-.photo-label {
-  position:absolute; bottom:-45px; right:0;
-  font-family:'Ma Shan Zheng',serif; font-size:1.4rem;
-  color:rgba(201,165,90,.35); letter-spacing:.2em;
+.car-btn {
+  position: absolute;
+  top: auto;
+  bottom: -60px;
+  z-index: 20;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--gold2);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  backdrop-filter: blur(8px);
 }
+.car-btn:hover {
+  background: var(--gold);
+  color: #000;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px var(--gold);
+}
+.car-btn svg { width: 16px; height: 16px; }
+.car-prev { left: calc(50% - 50px); }
+.car-next { right: calc(50% - 50px); }
 
 /* ════════════════════════════════════════
    GRID & CARDS
@@ -854,17 +927,17 @@ body.has-mouse #brushTip { display:block }
   position:relative; overflow:hidden;
   backdrop-filter:blur(var(--glass-blur)) saturate(150%);
   -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(150%);
-  transition:transform .5s cubic-bezier(.22,1,.36,1), border-color .5s, box-shadow .5s, background .5s;
+  transform: perspective(1000px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+  transform-style: preserve-3d;
+  transition: transform 0.2s ease-out, background 0.5s, border-color 0.5s, box-shadow 0.5s;
   box-shadow:0 15px 45px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.05);
 }
 .card:hover .ci {
-  transform:translateY(-8px);
   border-color:rgba(201,165,90,.45);
   background:var(--card-hover);
   box-shadow:0 25px 65px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
 }
 
-/* Card inner decorative elements */
 .ci::before {
   content:''; position:absolute; top:0; left:0; width:100%; height:2px;
   background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);
@@ -877,14 +950,16 @@ body.has-mouse #brushTip { display:block }
   font-family:'Ma Shan Zheng',serif; font-size:5.5rem;
   color:rgba(201,165,90,.03); pointer-events:none;
   transition:color .5s, transform .5s;
+  transform: translateZ(10px);
 }
-.card:hover .gn { color:rgba(201,165,90,.08); transform:scale(1.1) rotate(-3deg) }
+.card:hover .gn { color:rgba(201,165,90,.08); transform: scale(1.1) rotate(-3deg) translateZ(10px); }
 
 .av {
   width:56px; height:56px; border-radius:50%;
   margin-bottom:24px; position:relative;
   padding:3px; background:linear-gradient(135deg,var(--gold),var(--gold3));
   box-shadow:0 8px 20px rgba(0,0,0,.3);
+  transform: translateZ(60px);
 }
 .av img { width:100%; height:100%; border-radius:50%; object-fit:cover; border:2px solid #000 }
 
@@ -893,6 +968,7 @@ body.has-mouse #brushTip { display:block }
   color:rgba(201,165,90,.38); margin-bottom:6px;
   position:relative; z-index:1;
   font-family:'Cinzel',serif;
+  transform: translateZ(40px);
 }
 .cname {
   font-family:'Playfair Display',serif;
@@ -900,6 +976,7 @@ body.has-mouse #brushTip { display:block }
   line-height:1.05; color:var(--fog);
   margin-bottom:8px; letter-spacing:-.01em;
   position:relative; z-index:1;
+  transform: translateZ(50px);
 }
 .chandl {
   font-family:'Cormorant Garamond',serif;
@@ -907,12 +984,14 @@ body.has-mouse #brushTip { display:block }
   color:rgba(201,165,90,.45);
   margin-bottom:18px; letter-spacing:.02em;
   position:relative; z-index:1;
+  transform: translateZ(30px);
 }
 .cdesc {
   font-size:.9rem; line-height:1.9;
   color:var(--fog3); font-style:italic;
   margin-bottom:30px;
   position:relative; z-index:1;
+  transform: translateZ(20px);
 }
 
 /* ════════════════════════════════════════
@@ -921,6 +1000,7 @@ body.has-mouse #brushTip { display:block }
 .email-display {
   display:flex; align-items:center; gap:10px;
   margin-bottom:20px; position:relative; z-index:1;
+  transform: translateZ(50px);
 }
 .email-name {
   font-family:'Cinzel',serif; font-size:.72rem; font-weight:500;
@@ -952,6 +1032,7 @@ body.has-mouse #brushTip { display:block }
   padding-bottom:4px;
   transition:color .3s, gap .35s, border-color .3s, text-shadow .3s;
   position:relative; z-index:1;
+  transform: translateZ(40px);
 }
 .cta:hover {
   color:var(--gold2); gap:18px;
@@ -984,6 +1065,7 @@ body.has-mouse #brushTip { display:block }
   color:rgba(201,165,90,.65);
   transition:background .35s, border-color .35s;
   position:relative; z-index:1;
+  transform: translateZ(30px);
 }
 .card:hover .feat-badge { background:rgba(201,165,90,.11); border-color:rgba(201,165,90,.32) }
 .feat-badge::before {
@@ -1023,6 +1105,7 @@ body.has-mouse #brushTip { display:block }
   display:flex; gap:32px; margin-top:16px; padding-top:16px;
   border-top:1px solid var(--line2);
   position:relative; z-index:1;
+  transform: translateZ(30px);
 }
 .stat { display:flex; flex-direction:column; gap:4px }
 .stat-v {
@@ -1071,7 +1154,7 @@ body.has-mouse #brushTip { display:block }
 }
 
 /* ════════════════════════════════════════
-   FLOATING INK DROPS (decorative)
+   FLOATING INK DROPS
    ════════════════════════════════════════ */
 .ink-drop {
   position:fixed; border-radius:50%; pointer-events:none; z-index:1;
@@ -1095,21 +1178,16 @@ body.has-mouse #brushTip { display:block }
 .reveal.on { opacity:1; transform:translateY(0) }
 
 /* ════════════════════════════════════════
-   2D PARALLAX LAYER (mouse / gyroscope)
+   2D PARALLAX LAYER
    ════════════════════════════════════════ */
 #parallaxLayer {
   position:fixed; inset:-5%; z-index:0; pointer-events:none;
   will-change:transform;
   transition:transform .12s cubic-bezier(.25,.46,.45,.94);
 }
-/* Cards get subtle counter-parallax */
-.ci, .bio-box, .photo-golden-frame {
-  will-change:transform;
-  transition:transform .5s cubic-bezier(.22,1,.36,1), border-color .5s, box-shadow .5s, background .5s;
-}
 
 /* ════════════════════════════════════════
-   BANNER / DECORATION SECTION (below Discord)
+   BANNER / DECORATION SECTION
    ════════════════════════════════════════ */
 .banner-section {
   margin-top:32px; position:relative;
@@ -1122,6 +1200,8 @@ body.has-mouse #brushTip { display:block }
   box-shadow:0 12px 50px rgba(0,0,0,.4), 0 0 20px rgba(201,165,90,.1);
   transition:box-shadow .6s, transform .6s;
   overflow:hidden;
+  transform: perspective(1000px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+  transform-style: preserve-3d;
 }
 .banner-golden-frame::before {
   content:''; position:absolute; inset:3px;
@@ -1131,7 +1211,6 @@ body.has-mouse #brushTip { display:block }
   content:''; position:absolute; inset:-6px;
   border:1px solid var(--gold-dim); pointer-events:none;
 }
-/* Corner ornaments for banner */
 .banner-golden-frame .bfrn {
   position:absolute; width:18px; height:18px;
   border:2px solid var(--gold); z-index:3;
@@ -1143,7 +1222,6 @@ body.has-mouse #brushTip { display:block }
 
 .banner-golden-frame:hover {
   box-shadow:0 18px 65px rgba(0,0,0,.55), 0 0 35px rgba(201,165,90,.2);
-  transform:translateY(-3px);
 }
 .banner-inner {
   width:100%; position:relative; overflow:hidden;
@@ -1156,25 +1234,10 @@ body.has-mouse #brushTip { display:block }
   display:block;
   max-height:260px;
 }
-/* Placeholder text when no banner media */
 .banner-placeholder {
   font-family:'Ma Shan Zheng',serif;
   color:rgba(201,165,90,.25); font-size:1rem; letter-spacing:.5em;
   text-align:center; padding:30px;
-}
-
-/* ════════════════════════════════════════
-   MOBILE — DISABLE TEXT SELECTION
-   ════════════════════════════════════════ */
-@media (pointer:coarse) {
-  * {
-    -webkit-user-select:none !important;
-    -moz-user-select:none !important;
-    user-select:none !important;
-    -webkit-touch-callout:none !important;
-  }
-  /* Allow selecting inside copy button for accessibility */
-  input, textarea { -webkit-user-select:text !important; user-select:text !important }
 }
 
 /* ════════════════════════════════════════
@@ -1205,31 +1268,29 @@ body.has-mouse #brushTip { display:block }
 [data-theme="light"] .hdr-tag-t { color:rgba(90,58,16,.35) }
 [data-theme="light"] .hdr-tag-l { background:linear-gradient(90deg,rgba(90,58,16,.2),transparent) }
 [data-theme="light"] .slbl { color:rgba(90,58,16,.45) }
-[data-theme="light"] .slbl-k { color:rgba(90,58,16,.18) }
-[data-theme="light"] .hr::before { background:linear-gradient(90deg,rgba(90,58,16,.4),rgba(90,58,16,.1) 70%,transparent) }
-[data-theme="light"] .hr-jewel { background:var(--gold); box-shadow:0 0 10px rgba(90,58,16,.5) }
 [data-theme="light"] .bio-label { color:rgba(90,58,16,.5) }
-/* bio-box light override consolidated above */
 [data-theme="light"] .bio-title-static { color:var(--fog) }
 [data-theme="light"] .bio-sep { background:rgba(90,58,16,.15) }
-[data-theme="light"] .photo-label { color:rgba(90,58,16,.5) }
 [data-theme="light"] #scrollProg { box-shadow:0 0 10px rgba(90,58,16,.4) }
 [data-theme="light"] .gold-topline { background:linear-gradient(90deg,transparent 5%,var(--gold3) 20%,var(--gold) 50%,var(--gold3) 80%,transparent 95%) }
 [data-theme="light"] #inkParticles { opacity:.2 }
 [data-theme="light"] .gn { color:rgba(90,58,16,.08) }
 [data-theme="light"] .card:hover .gn { color:rgba(90,58,16,.15) }
-/* musicPlayer light override consolidated above */
 [data-theme="light"] .lang-btn.active { background:rgba(90,58,16,.1) }
 [data-theme="light"] .lang-btn { color:rgba(90,58,16,.4) }
 [data-theme="light"] .lang-btn.active { color:var(--gold2) }
 [data-theme="light"] .lang-divider { background:rgba(90,58,16,.2) }
+[data-theme="light"] .fstamp { border-color:rgba(139,32,32,.3) }
+[data-theme="light"] .fstamp::before { border-color:rgba(139,32,32,.18) }
+[data-theme="light"] .fstamp b { color:rgba(139,32,32,.5) }
+[data-theme="light"] .ic-seal { border-color:rgba(139,32,32,.4) }
+[data-theme="light"] .ic-seal b { color:rgba(139,32,32,.7) }
 
 /* ════════════════════════════════════════
    RESPONSIVE
    ════════════════════════════════════════ */
 @media(max-width:900px) {
   .bio-grid { grid-template-columns:1fr; gap:40px }
-  .photo-frame-wrap { justify-content:center; margin-top:20px }
   .vl, .vr { display:none }
   .wrap { padding:0 30px 100px }
 }
@@ -1252,7 +1313,7 @@ body.has-mouse #brushTip { display:block }
   .ic-chinese-text { display:none }
   #musicPlayer { bottom:16px; right:12px; padding:6px 10px 6px 8px }
   .music-info { display:none }
-  .photo-golden-frame { width:240px; height:310px }
+  .carousel-3d-container { width: 220px; height: 280px; }
 }
 
 @media(max-width:480px) {
@@ -1263,7 +1324,6 @@ body.has-mouse #brushTip { display:block }
   .bio-field-val { font-size:1rem }
   .hdr-n { font-size:clamp(2.6rem,13vw,4rem) }
   .ic-name { font-size:3.2rem; letter-spacing:.1em }
-  .photo-golden-frame { width:200px; height:260px }
   #langSwitcher { right:80px; top:16px }
   .ic-vert-left, .ic-vert-right { display:none }
   .ic-divider span { width:40px }
@@ -1271,6 +1331,9 @@ body.has-mouse #brushTip { display:block }
 </style>
 </head>
 <body>
+
+<!-- Click Sound Audio Element -->
+<audio id="clickSound" src="click.mp3" preload="auto"></audio>
 
 <div id="pageLoader"></div>
 <div id="loaderBar"></div>
@@ -1301,13 +1364,11 @@ body.has-mouse #brushTip { display:block }
 <div id="scrollProg"></div>
 <div class="gold-topline"></div>
 
-<!-- Brush cursor tip SVG — gold ink brush harmonized with bg -->
 <div id="brushTip">
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M20 2L4 18l-1 5 5-1L22 6z" fill="rgba(201,165,90,.85)" stroke="rgba(139,100,35,.5)" stroke-width=".5"/>
     <path d="M4 18l-1 5 5-1" fill="rgba(139,90,25,.8)"/>
     <path d="M3 23 Q2 22 3 21" fill="rgba(80,50,10,.9)" stroke="none"/>
-    <!-- ink bristle shimmer -->
     <line x1="4" y1="18" x2="3" y2="23" stroke="rgba(229,197,133,.6)" stroke-width=".4"/>
   </svg>
 </div>
@@ -1315,13 +1376,10 @@ body.has-mouse #brushTip { display:block }
 
 <canvas id="starField"></canvas>
 <canvas id="inkParticles"></canvas>
-<div id="parallaxLayer">
-  <!-- Stars and particles get parallax effect via JS -->
-</div>
+<div id="parallaxLayer"></div>
 <div id="inkWashBg"></div>
 <div id="inkTexture"></div>
 
-<!-- Language Switcher -->
 <div id="langSwitcher" aria-label="Language switcher">
   <button class="lang-btn active" data-lang="th" title="ภาษาไทย">ไทย</button>
   <div class="lang-divider"></div>
@@ -1358,7 +1416,6 @@ body.has-mouse #brushTip { display:block }
   </div>
 </button>
 
-<!-- Music Player -->
 <div id="musicPlayer" class="paused">
   <button id="musicToggleBtn" title="เปิด/ปิดเพลง">
     <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor">
@@ -1397,7 +1454,6 @@ body.has-mouse #brushTip { display:block }
   </video>
   <canvas id="smokeC"></canvas>
 
-  <!-- Ink wash SVG decoration -->
   <div class="ic-ink-wash">
     <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
       <defs>
@@ -1507,19 +1563,42 @@ body.has-mouse #brushTip { display:block }
         </div>
 
         <div class="photo-frame-wrap">
-          <!-- รูปภาพใหญ่ (hero) — รองรับ .jpg .png .gif และ video -->
-          <div class="photo-golden-frame">
-            <div class="frame-orn orn-tl"></div>
-            <div class="frame-orn orn-tr"></div>
-            <div class="frame-orn orn-bl"></div>
-            <div class="frame-orn orn-br"></div>
-            <div class="photo-inner">
-              <!-- HERO IMAGE — เปลี่ยนได้เป็น png/jpg/gif หรือ video -->
-              <img class="hero-img" src="profile.jpg" alt="Hero Photo"
-                   onerror="this.style.opacity='0.3'">
-              <!-- ถ้าจะใช้วิดีโอแทน: <video class="hero-img" src="hero.mp4" autoplay muted loop playsinline></video> -->
+          <div class="carousel-3d-container">
+            <div class="carousel-3d-scene" id="carouselScene">
+              <div class="carousel-card">
+                <div class="frame-orn orn-tl"></div>
+                <div class="frame-orn orn-tr"></div>
+                <div class="frame-orn orn-bl"></div>
+                <div class="frame-orn orn-br"></div>
+                <div class="photo-inner">
+                  <img src="img1.jpg" alt="Image 1" draggable="false" onerror="this.style.display='none'">
+                </div>
+              </div>
+              <div class="carousel-card">
+                <div class="frame-orn orn-tl"></div>
+                <div class="frame-orn orn-tr"></div>
+                <div class="frame-orn orn-bl"></div>
+                <div class="frame-orn orn-br"></div>
+                <div class="photo-inner">
+                  <img src="img2.jpg" alt="Image 2" draggable="false" onerror="this.style.display='none'">
+                </div>
+              </div>
+              <div class="carousel-card">
+                <div class="frame-orn orn-tl"></div>
+                <div class="frame-orn orn-tr"></div>
+                <div class="frame-orn orn-bl"></div>
+                <div class="frame-orn orn-br"></div>
+                <div class="photo-inner">
+                  <img src="img3.jpg" alt="Image 3" draggable="false" onerror="this.style.display='none'">
+                </div>
+              </div>
             </div>
-            <div class="photo-label">墨離煙</div>
+            <button class="car-btn car-prev" id="carPrev">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="car-btn car-next" id="carNext">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -1532,19 +1611,18 @@ body.has-mouse #brushTip { display:block }
       <div class="card feat reveal">
         <div class="ci">
           <div class="gn">一</div>
-          <div class="av"><!-- รูป Profile (avatar) -->
-            <img class="profile-img" src="profile.jpg" alt="Email"></div>
+          <div class="av"><img class="profile-img" src="profile.jpg" alt="Email" draggable="false"></div>
           <div class="slbl" data-t="card_email_label">Primary · Email</div>
           <h3 class="cname">Email</h3>
           <p class="cdesc" data-t="card_email_desc">สำหรับงานและติดต่อธุรกิจเท่านั้น<br>Work & Business inquiries only.</p>
           <div class="email-display">
-            <span class="email-name"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6f01170d1d0600152f08020e0603410c0002">[nxbrioz@gmail.com]</a></span>
+            <span class="email-name">nxbrioz@gmail.com</span>
             <button class="copy-btn" id="copyEmailBtn" data-email="nxbrioz@gmail.com" title="คัดลอกอีเมล">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
               <span data-t="btn_copy">คัดลอก</span>
             </button>
           </div>
-          <a href="/cdn-cgi/l/email-protection#3c52445e4e555346" class="cta ink-link">
+          <a href="mailto:nxbrioz@gmail.com" class="cta ink-link">
             <span data-t="btn_write">WRITE TO ME</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
@@ -1557,7 +1635,7 @@ body.has-mouse #brushTip { display:block }
         <div class="ci">
           <div class="gn">二</div>
           <div class="inner">
-            <div class="av"><img src="ig.jpg" alt="Instagram"></div>
+            <div class="av"><img src="ig.jpg" alt="Instagram" draggable="false"></div>
             <div class="ct">
               <div class="slbl" data-t="card_ig_label">Visual · Social</div>
               <h3 class="cname">Instagram</h3>
@@ -1576,7 +1654,7 @@ body.has-mouse #brushTip { display:block }
         <div class="ci">
           <div class="gn">三</div>
           <div class="inner">
-            <div class="av"><img src="fb.jpg" alt="Facebook"></div>
+            <div class="av"><img src="fb.jpg" alt="Facebook" draggable="false"></div>
             <div class="ct">
               <div class="slbl" data-t="card_fb_label">Social · Network</div>
               <h3 class="cname">Facebook</h3>
@@ -1595,7 +1673,7 @@ body.has-mouse #brushTip { display:block }
         <div class="ci">
           <div class="gn">四</div>
           <div class="inner">
-            <div class="av"><img src="line.jpg" alt="Line"></div>
+            <div class="av"><img src="line.jpg" alt="Line" draggable="false"></div>
             <div class="ct">
               <div class="slbl" data-t="card_line_label">Messaging · Line</div>
               <h3 class="cname">LINE</h3>
@@ -1624,7 +1702,7 @@ body.has-mouse #brushTip { display:block }
         <div class="ci">
           <div class="gn">五</div>
           <div class="inner">
-            <div class="av"><img src="dc.jpg" alt="Discord"></div>
+            <div class="av"><img src="dc.jpg" alt="Discord" draggable="false"></div>
             <div class="ct">
               <div class="slbl" data-t="card_dc_label">Community · Discord</div>
               <h3 class="cname">Discord</h3>
@@ -1649,7 +1727,7 @@ body.has-mouse #brushTip { display:block }
       </div>
     </div>
 
-    <!-- BANNER DECORATION SECTION — ใต้ Discord (รองรับ img/video) -->
+    <!-- BANNER DECORATION SECTION -->
     <div class="banner-section reveal">
       <div class="banner-golden-frame">
         <div class="bfrn tl"></div>
@@ -1657,10 +1735,7 @@ body.has-mouse #brushTip { display:block }
         <div class="bfrn bl"></div>
         <div class="bfrn br"></div>
         <div class="banner-inner" id="bannerInner">
-          <!-- วางรูปหรือวิดีโอตกแต่งแนวนอนที่นี่ -->
-          <!-- ตัวอย่าง: <img src="banner.jpg" alt="Banner"> -->
-          <!-- ตัวอย่าง: <video src="banner.mp4" autoplay muted loop playsinline></video> -->
-          <img src="banner.jpg" alt="Banner decoration" onerror="this.style.display='none'; document.getElementById('bannerPlaceholder').style.display='flex'">
+          <img src="banner.jpg" alt="Banner decoration" draggable="false" onerror="this.style.display='none'; document.getElementById('bannerPlaceholder').style.display='flex'">
           <div class="banner-placeholder" id="bannerPlaceholder" style="display:none">
             墨道金煙 · ใส่รูปหรือวิดีโอตกแต่งที่นี่
           </div>
@@ -1680,7 +1755,7 @@ body.has-mouse #brushTip { display:block }
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 /* ════════════════════════════════════════
    LANGUAGE DATA
    ════════════════════════════════════════ */
@@ -1745,6 +1820,7 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!isMobile) document.body.classList.add('has-mouse');
+  initTextProtection();
   initTheme();
   initLanguage();
   initIntro();
@@ -1753,9 +1829,45 @@ document.addEventListener('DOMContentLoaded', () => {
   initEmailCopy();
   initBackgrounds();
   initBrush();
+  initCarousel();
+  init3DTilt();
 });
 
 /* ════════════════════════════════════════
+   TEXT PROTECTION — disable copy/drag/select
+   ════════════════════════════════════════ */
+function initTextProtection() {
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('dragstart', e => e.preventDefault());
+  document.addEventListener('selectstart', e => e.preventDefault());
+  document.addEventListener('copy', e => e.preventDefault());
+  document.addEventListener('cut', e => e.preventDefault());
+}
+
+/* ════════════════════════════════════════
+   CUSTOM CLICK SOUND
+   ════════════════════════════════════════ */
+function playClickSound() {
+  const sound = document.getElementById('clickSound');
+  if (!sound) return;
+
+  // รีเซ็ตเสียงให้เริ่มต้นใหม่
+  sound.pause();
+  sound.currentTime = 0;
+
+  // บังคับโหลดไฟล์เสียงใหม่ (แก้ปัญหาไฟล์ค้าง/ไม่ดัง)
+  sound.load();
+
+  // เล่นเสียง
+  const playPromise = sound.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(error => {
+      // ถ้าเบราว์เซอร์บล็อก ให้ตั้งค่า muted=false แล้วลองเล่นใหม่อีกครั้ง
+      sound.muted = false;
+      sound.play().catch(e => {});
+    });
+  }
+}/* ════════════════════════════════════════
    THEME SYSTEM
    ════════════════════════════════════════ */
 function initTheme() {
@@ -1764,7 +1876,6 @@ function initTheme() {
   const icon = document.getElementById('themeLoadIcon');
   const ripple = document.getElementById('themeRipple');
   
-  // Load saved theme
   const savedTheme = localStorage.getItem('numpu-theme') || 'dark';
   document.documentElement.setAttribute('data-theme', savedTheme);
 
@@ -1772,10 +1883,8 @@ function initTheme() {
     const current = document.documentElement.getAttribute('data-theme');
     const next = current === 'dark' ? 'light' : 'dark';
     
-    // Play sound
-    playClickSound('chime');
+    playClickSound();
 
-    // Visual transition
     overlay.classList.add('active');
     ripple.classList.remove('run');
     void ripple.offsetWidth;
@@ -1807,7 +1916,7 @@ function initLanguage() {
       const lang = btn.getAttribute('data-lang');
       if (lang === currentLang) return;
       
-      playClickSound('soft');
+      playClickSound();
       setLanguage(lang);
     });
   });
@@ -1846,13 +1955,11 @@ function initIntro() {
   let warpAnim = null;
 
   iOv.addEventListener('click', (e) => {
-    playClickSound('deep');
+    playClickSound();
     iOv.style.pointerEvents = 'none';
 
-    // 1. Activate warp portal rings
     portal.classList.add('active');
 
-    // 2. Warp canvas distortion
     if (warpCvs && wCtx) {
       warpCvs.width = window.innerWidth;
       warpCvs.height = window.innerHeight;
@@ -1874,7 +1981,6 @@ function initIntro() {
           wCtx.lineWidth = 1.5;
           wCtx.stroke();
         }
-        // Radial beams
         for (let a = 0; a < 12; a++) {
           const angle = (a / 12) * Math.PI * 2 + warpT * 0.8;
           const beamAlpha = Math.max(0, Math.sin(warpT * 2 + a) * 0.15);
@@ -1894,9 +2000,7 @@ function initIntro() {
       drawWarp();
     }
 
-    // 3. Screen flash + sucking transition
     setTimeout(() => {
-      // Flash
       const flash = document.createElement('div');
       flash.style.cssText = `position:fixed;inset:0;z-index:9010;background:radial-gradient(ellipse at center,rgba(255,240,200,.9) 0%,rgba(201,165,90,.4) 40%,transparent 70%);pointer-events:none;animation:warpFlash .5s ease forwards`;
       const style = document.createElement('style');
@@ -1906,7 +2010,6 @@ function initIntro() {
       setTimeout(() => { flash.remove(); style.remove(); }, 600);
     }, 400);
 
-    // 4. Transition to page
     setTimeout(() => {
       intro.style.transition = 'opacity .6s ease, transform .6s cubic-bezier(.4,0,.2,1)';
       intro.style.opacity = '0';
@@ -1945,13 +2048,11 @@ function initScrollReveal() {
 }
 
 function handleScroll() {
-  // Progress bar
   const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
   const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
   const scrolled = (winScroll / height) * 100;
   document.getElementById('scrollProg').style.width = scrolled + "%";
 
-  // Reveal elements
   const reveals = document.querySelectorAll('.reveal');
   reveals.forEach(el => {
     const rect = el.getBoundingClientRect();
@@ -1974,6 +2075,7 @@ function initMusic() {
   audio.volume = vol.value;
 
   btn.addEventListener('click', () => {
+    playClickSound();
     if (audio.paused) {
       audio.play().catch(e => console.log("Autoplay blocked"));
       player.classList.remove('paused');
@@ -1998,12 +2100,12 @@ function initMusic() {
 function initEmailCopy() {
   const btn = document.getElementById('copyEmailBtn');
   btn.addEventListener('click', () => {
+    playClickSound();
     const email = btn.getAttribute('data-email');
     navigator.clipboard.writeText(email).then(() => {
       btn.classList.add('copied');
       const originalText = btn.querySelector('[data-t]').innerText;
       btn.querySelector('[data-t]').innerText = currentLang === 'th' ? 'คัดลอกแล้ว!' : 'COPIED!';
-      playClickSound('copy');
       
       setTimeout(() => {
         btn.classList.remove('copied');
@@ -2017,7 +2119,6 @@ function initEmailCopy() {
    BACKGROUNDS (Starfield & Particles)
    ════════════════════════════════════════ */
 function initBackgrounds() {
-  // Starfield
   const canvas = document.getElementById('starField');
   const ctx = canvas.getContext('2d');
   let w, h, stars = [];
@@ -2056,7 +2157,6 @@ function initBackgrounds() {
   }
   animate();
 
-  // Ink Particles
   const pCanvas = document.getElementById('inkParticles');
   const pCtx = pCanvas.getContext('2d');
   let pw, ph, particles = [];
@@ -2099,81 +2199,6 @@ function initBackgrounds() {
 }
 
 /* ════════════════════════════════════════
-   WEB AUDIO — Click Sound System
-   ════════════════════════════════════════ */
-let audioCtx = null;
-function getAudioCtx() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  return audioCtx;
-}
-
-function playClickSound(type) {
-  try {
-    const ctx = getAudioCtx();
-    if (ctx.state === 'suspended') ctx.resume();
-
-    if (type === 'soft') {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(800, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.15);
-      gain.gain.setValueAtTime(0.06, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.15);
-    } else if (type === 'deep') {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const filter = ctx.createBiquadFilter();
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(ctx.destination);
-      osc.type = 'triangle';
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(600, ctx.currentTime);
-      filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.3);
-      osc.frequency.setValueAtTime(180, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.3);
-      gain.gain.setValueAtTime(0.1, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.3);
-    } else if (type === 'chime') {
-      [523.25, 659.25, 783.99].forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.06);
-        gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.06);
-        gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + i * 0.06 + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.06 + 0.5);
-        osc.start(ctx.currentTime + i * 0.06);
-        osc.stop(ctx.currentTime + i * 0.06 + 0.5);
-      });
-    } else if (type === 'copy') {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, ctx.currentTime);
-      osc.frequency.setValueAtTime(1108.73, ctx.currentTime + 0.08);
-      gain.gain.setValueAtTime(0.06, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.25);
-    }
-  } catch(e) { /* silent fail */ }
-}
-
-/* ════════════════════════════════════════
    WARP PORTAL PAGE TRANSITION (external links)
    ════════════════════════════════════════ */
 function triggerInkSplash(x, y, href, isExternal) {
@@ -2183,7 +2208,6 @@ function triggerInkSplash(x, y, href, isExternal) {
   overlay.style.setProperty('--sx', pct_x);
   overlay.style.setProperty('--sy', pct_y);
 
-  // Spawn warp rings from click point
   const ringColors = [
     `rgba(201,165,90,0.9)`,
     `rgba(229,197,133,0.6)`,
@@ -2207,7 +2231,6 @@ function triggerInkSplash(x, y, href, isExternal) {
     setTimeout(() => ring.remove(), 1000);
   });
 
-  // Spawn warp shards (was ink blobs)
   for (let i = 0; i < 6; i++) {
     const blob = document.createElement('div');
     blob.className = 'ink-blob';
@@ -2224,12 +2247,11 @@ function triggerInkSplash(x, y, href, isExternal) {
     setTimeout(() => blob.remove(), 1000);
   }
 
-  // Conic warp overlay
   overlay.classList.remove('run');
   void overlay.offsetWidth;
   overlay.classList.add('run');
 
-  playClickSound('deep');
+  playClickSound();
 
   setTimeout(() => {
     overlay.classList.remove('run');
@@ -2240,7 +2262,6 @@ function triggerInkSplash(x, y, href, isExternal) {
   }, 820);
 }
 
-// Attach ink splash to external links
 document.addEventListener('click', e => {
   const link = e.target.closest('.ink-link');
   if (!link) return;
@@ -2277,12 +2298,12 @@ function spawnClickRipple(x, y) {
 
 document.addEventListener('mousedown', (e) => {
   if (e.button !== 0) return;
-  playClickSound('soft');
+  playClickSound();
   spawnClickRipple(e.clientX, e.clientY);
 }, { passive: true });
 
 /* ════════════════════════════════════════
-   BRUSH CURSOR — paint with color mixing
+   BRUSH CURSOR
    ════════════════════════════════════════ */
 const brushCanvas = document.getElementById('brushCanvas');
 const brushCtx = brushCanvas.getContext('2d');
@@ -2296,7 +2317,6 @@ function resizeBrush() {
 resizeBrush();
 window.addEventListener('resize', resizeBrush, { passive: true });
 
-// Brush state
 let brushX = -100, brushY = -100;
 let prevBrushX = -100, prevBrushY = -100;
 let brushDown = false;
@@ -2354,12 +2374,12 @@ function redrawBrush() {
 }
 
 const brushPalette = [
-  { h: 38,  s: 65, l: 60 }, // Warm Gold — harmonizes with --gold
-  { h: 25,  s: 70, l: 50 }, // Deep Amber
-  { h: 0,   s: 55, l: 42 }, // Muted Crimson — harmonizes with --red
-  { h: 200, s: 40, l: 52 }, // Dusty Steel Blue
-  { h: 50,  s: 55, l: 58 }, // Pale Ochre
-  { h: 15,  s: 60, l: 45 }, // Burnt Sienna
+  { h: 38,  s: 65, l: 60 }, 
+  { h: 25,  s: 70, l: 50 }, 
+  { h: 0,   s: 55, l: 42 }, 
+  { h: 200, s: 40, l: 52 }, 
+  { h: 50,  s: 55, l: 58 }, 
+  { h: 15,  s: 60, l: 45 }, 
 ];
 
 function updateBrushColor() {
@@ -2406,7 +2426,6 @@ window.addEventListener('mousemove', e => {
 window.addEventListener('mousedown', e => { if(e.button === 0) brushDown = true; });
 window.addEventListener('mouseup', () => brushDown = false);
 
-// Touch/mobile brush support
 window.addEventListener('touchstart', e => {
   const t = e.touches[0];
   prevBrushX = t.clientX; prevBrushY = t.clientY;
@@ -2416,53 +2435,54 @@ window.addEventListener('touchmove', e => {
   handleMove(t.clientX, t.clientY);
 }, { passive: true });
 
-function initBrush() {
-  // Brush tip follows mouse — already set up via handleMove
-  // Nothing extra needed; brush canvas & tip are initialized at top-level
-}
+function initBrush() {}
 
 /* ════════════════════════════════════════
-   2D PARALLAX — Mouse (Desktop) & Gyroscope (Mobile)
+   2D PARALLAX & 3D TILT
    ════════════════════════════════════════ */
+function init3DTilt() {
+  const tiltEls = document.querySelectorAll('.ci, .bio-box, .banner-golden-frame, .carousel-3d-container');
+  
+  tiltEls.forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const rx = ((y - cy) / cy) * -6; 
+      const ry = ((x - cx) / cx) * 6;
+      el.style.setProperty('--rx', `${rx}deg`);
+      el.style.setProperty('--ry', `${ry}deg`);
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.setProperty('--rx', `0deg`);
+      el.style.setProperty('--ry', `0deg`);
+    });
+  });
+}
+
 (function initParallax() {
-  // Smooth target values
   let targetX = 0, targetY = 0;
   let currentX = 0, currentY = 0;
-  const STRENGTH_BG   = 14;   // background layer movement (px)
-  const STRENGTH_CARD = 6;    // cards counter-movement (px)
-  const LERP = 0.06;          // smoothing factor — lower = smoother
+  const STRENGTH_BG   = 14;
+  const STRENGTH_CARD = 6;
+  const LERP = 0.06;
 
-  // Elements to parallax
   const bgLayer   = document.getElementById('inkWashBg');
   const starCvs   = document.getElementById('starField');
   const inkCvs    = document.getElementById('inkParticles');
-  const cards     = [];       // populated after page shown
-
-  function getCards() {
-    if (cards.length === 0) {
-      document.querySelectorAll('.ci, .bio-box, .photo-golden-frame').forEach(el => cards.push(el));
-    }
-  }
 
   function applyParallax(nx, ny) {
-    // nx, ny are normalised -1..1 (centre = 0)
     const bx = nx * STRENGTH_BG;
     const by = ny * STRENGTH_BG;
-    const cx = -nx * STRENGTH_CARD;
-    const cy = -ny * STRENGTH_CARD;
 
     const transform = `translate(${bx}px, ${by}px)`;
     if (bgLayer)  bgLayer.style.transform  = transform;
     if (starCvs)  starCvs.style.transform  = transform;
     if (inkCvs)   inkCvs.style.transform   = transform;
-
-    getCards();
-    cards.forEach(el => {
-      el.style.transform = `translate(${cx}px, ${cy}px)`;
-    });
   }
 
-  // ── DESKTOP: Mouse ──────────────────────────────
   if (!isMobile) {
     window.addEventListener('mousemove', e => {
       targetX = (e.clientX / window.innerWidth  - 0.5) * 2;
@@ -2470,38 +2490,18 @@ function initBrush() {
     }, { passive: true });
   }
 
-  // ── MOBILE: Gyroscope ───────────────────────────
   if (isMobile && window.DeviceOrientationEvent) {
-    function requestGyro() {
-      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-        DeviceOrientationEvent.requestPermission()
-          .then(state => { if (state === 'granted') attachGyro(); })
-          .catch(() => {});
-      } else {
-        attachGyro();
-      }
-    }
-
-    function attachGyro() {
-      let baseGamma = null, baseBeta = null;
-      window.addEventListener('deviceorientation', e => {
-        if (e.gamma === null) return;
-        if (baseGamma === null) { baseGamma = e.gamma; baseBeta = e.beta; }
-        // Clamp tilt to ±25deg and normalise to -1..1
-        const gx = Math.max(-25, Math.min(25, e.gamma - baseGamma)) / 25;
-        const gy = Math.max(-25, Math.min(25, e.beta  - baseBeta )) / 25;
-        targetX = gx;
-        targetY = gy;
-      }, { passive: true });
-    }
-
-    // On iOS we need a user gesture; piggyback onto the intro click
-    const iOv = document.getElementById('iOv');
-    if (iOv) iOv.addEventListener('click', requestGyro, { once: true });
-    else requestGyro();
+    let baseGamma = null, baseBeta = null;
+    window.addEventListener('deviceorientation', e => {
+      if (e.gamma === null) return;
+      if (baseGamma === null) { baseGamma = e.gamma; baseBeta = e.beta; }
+      const gx = Math.max(-25, Math.min(25, e.gamma - baseGamma)) / 25;
+      const gy = Math.max(-25, Math.min(25, e.beta  - baseBeta )) / 25;
+      targetX = gx;
+      targetY = gy;
+    }, { passive: true });
   }
 
-  // ── RAF loop: smooth lerp ────────────────────────
   function tick() {
     currentX += (targetX - currentX) * LERP;
     currentY += (targetY - currentY) * LERP;
@@ -2512,7 +2512,50 @@ function initBrush() {
 })();
 
 /* ════════════════════════════════════════
-   FLOATING INK DROPS — ambient decoration
+   3D CAROUSEL LOGIC
+   ════════════════════════════════════════ */
+function initCarousel() {
+  const scene = document.getElementById('carouselScene');
+  if (!scene) return;
+  const cards = Array.from(scene.querySelectorAll('.carousel-card'));
+  const prevBtn = document.getElementById('carPrev');
+  const nextBtn = document.getElementById('carNext');
+  let current = 0;
+
+  function updateCards() {
+    cards.forEach((card, i) => {
+      card.classList.remove('active', 'prev', 'next', 'hidden-left', 'hidden-right');
+      if (i === current) {
+        card.classList.add('active');
+      } else if (i === (current - 1 + cards.length) % cards.length) {
+        card.classList.add('prev');
+      } else if (i === (current + 1) % cards.length) {
+        card.classList.add('next');
+      } else if (i < current) {
+        card.classList.add('hidden-left');
+      } else {
+        card.classList.add('hidden-right');
+      }
+    });
+  }
+
+  prevBtn.addEventListener('click', () => {
+    playClickSound();
+    current = (current - 1 + cards.length) % cards.length;
+    updateCards();
+  });
+
+  nextBtn.addEventListener('click', () => {
+    playClickSound();
+    current = (current + 1) % cards.length;
+    updateCards();
+  });
+
+  updateCards();
+}
+
+/* ════════════════════════════════════════
+   FLOATING INK DROPS
    ════════════════════════════════════════ */
 (function spawnInkDrops() {
   for (let i = 0; i < 8; i++) {
